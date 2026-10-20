@@ -1,0 +1,138 @@
+{
+  "lesson": "02-sets-and-set-operations",
+  "title": "Sets and Set Operations",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which Python type most directly models a mathematical set?",
+      "options": [
+        "list",
+        "tuple",
+        "set",
+        "dict"
+      ],
+      "correct": 2,
+      "explanation": "Python's set has no order and no duplicates — exactly membership-only structure."
+    },
+    {
+      "stage": "pre",
+      "question": "You need \"everyone who is in admins AND in contractors\". In set language that is…",
+      "options": [
+        "the union admins ∪ contractors",
+        "the intersection admins ∩ contractors",
+        "the difference admins − contractors",
+        "the complement of admins"
+      ],
+      "correct": 1,
+      "explanation": "\"Both\" is intersection; union is \"either\", difference is \"in one but not the other\"."
+    },
+    {
+      "stage": "pre",
+      "question": "Are {1, 2} and {2, 1, 1} the same set?",
+      "options": [
+        "No, because order differs",
+        "No, because one has a duplicate",
+        "Yes — sets have no order and no repeats",
+        "Only if the universe is {1, 2}"
+      ],
+      "correct": 2,
+      "explanation": "A set is fully determined by what belongs to it; order and repetition simply do not exist."
+    },
+    {
+      "stage": "pre",
+      "question": "The expression A ⊆ B is a claim that…",
+      "options": [
+        "produces a new set",
+        "is true exactly when every member of A is also a member of B",
+        "means A is strictly smaller than B",
+        "only makes sense for numbers"
+      ],
+      "correct": 1,
+      "explanation": "Operations like ∪ produce sets; ⊆, ∈, = produce truth values. Keeping them straight is half of set fluency."
+    },
+    {
+      "stage": "pre",
+      "question": "\"Users who are not admins\" is ambiguous in code unless you also fix…",
+      "options": [
+        "the password policy",
+        "the universe the complement is taken over",
+        "the sort order",
+        "the data structure used"
+      ],
+      "correct": 1,
+      "explanation": "Complement is always relative to a universe — all users, all accounts, all visitors? The lesson's trap example turns on this."
+    },
+    {
+      "stage": "post",
+      "question": "De Morgan's law for sets says Ā ∪ B̄ complement equals…",
+      "options": [
+        "Ā ∩ B̄ — complement of union is intersection of complements",
+        "Ā − B̄",
+        "A ∪ B itself",
+        "the empty set"
+      ],
+      "correct": 0,
+      "explanation": "\"Not (in A or in B)\" is exactly \"not in A and not in B\" — the set twin of the logic law from the next lesson."
+    },
+    {
+      "stage": "post",
+      "question": "The standard proof technique for showing two sets A and B are equal is…",
+      "options": [
+        "checking a few example elements",
+        "double inclusion: A ⊆ B and B ⊆ A",
+        "comparing their sizes",
+        "listing all their elements"
+      ],
+      "correct": 1,
+      "explanation": "Each inclusion direction rules out half the possible mismatches; together they force equality for every element."
+    },
+    {
+      "stage": "post",
+      "question": "The symmetric difference A △ B contains exactly…",
+      "options": [
+        "elements in both A and B",
+        "elements in neither set",
+        "elements in exactly one of A and B",
+        "all elements of A plus all of B"
+      ],
+      "correct": 2,
+      "explanation": "It is (A − B) ∪ (B − A) — the XOR of sets, verified computationally in the lesson script."
+    },
+    {
+      "stage": "post",
+      "question": "Why does brute-forcing a set law over a 4-element universe provide only evidence, not proof?",
+      "options": [
+        "Four elements are too few to compute with",
+        "The law must hold over every universe of every size, and finite checks cover only one",
+        "Computers round floating-point values",
+        "Subsets cannot be enumerated completely"
+      ],
+      "correct": 1,
+      "explanation": "The prose proof by double inclusion works for any universe; the computer check explored one small instance of it."
+    },
+    {
+      "stage": "post",
+      "question": "In the proof of ¬(x ∈ A ∪ B) ⇒ x ∈ Ā, the key step is…",
+      "options": [
+        "dividing by the size of A",
+        "if x were in A, then x would be in A ∪ B — a contradiction",
+        "renaming x to y",
+        "checking whether A is finite"
+      ],
+      "correct": 1,
+      "explanation": "Contradiction against the definition of union — the same move used throughout later proofs."
+    },
+    {
+      "stage": "post",
+      "question": "SQL's INTERSECT, UNION, and EXCEPT correspond to which set operations?",
+      "options": [
+        "intersection, union, difference",
+        "union, intersection, complement",
+        "difference, symmetric difference, union",
+        "subset, superset, equality"
+      ],
+      "correct": 0,
+      "explanation": "Query engines implement exactly the operations defined by membership conditions in this lesson."
+    }
+  ]
+}

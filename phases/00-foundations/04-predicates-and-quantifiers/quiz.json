@@ -1,0 +1,138 @@
+{
+  "lesson": "04-predicates-and-quantifiers",
+  "title": "Predicates and Quantifiers",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which Python expression is the direct counterpart of ∀x P(x) over a finite domain?",
+      "options": [
+        "any(P(x) for x in domain)",
+        "all(P(x) for x in domain)",
+        "map(P, domain)",
+        "filter(P, domain)"
+      ],
+      "correct": 1,
+      "explanation": "all() checks every element; any() is the existential. Python already speaks quantifier."
+    },
+    {
+      "stage": "pre",
+      "question": "A predicate is…",
+      "options": [
+        "a sentence that is definitely true",
+        "a proposition with variable holes that becomes true/false once filled",
+        "a special kind of proof",
+        "a Python decorator"
+      ],
+      "correct": 1,
+      "explanation": "P(x) = \"x is prime\" is neither true nor false until x is fixed — then it becomes a proposition."
+    },
+    {
+      "stage": "pre",
+      "question": "\"Not everyone passed the exam\" is equivalent to…",
+      "options": [
+        "everyone failed the exam",
+        "someone passed the exam",
+        "someone did not pass the exam",
+        "no one took the exam"
+      ],
+      "correct": 2,
+      "explanation": "Negating a universal gives an existential with a negated predicate — the flip rule this lesson formalizes."
+    },
+    {
+      "stage": "pre",
+      "question": "An existential claim ∃x P(x) is established by…",
+      "options": [
+        "checking every element",
+        "exhibiting one witness where P holds",
+        "proving P is possible",
+        "assuming P and finding a contradiction"
+      ],
+      "correct": 1,
+      "explanation": "One concrete example settles an ∃; that element is called the witness."
+    },
+    {
+      "stage": "pre",
+      "question": "Over the empty domain, ∀x P(x) is…",
+      "options": [
+        "false, because nothing is true",
+        "true, vacuously — no x can fail it",
+        "undefined",
+        "true only if P is the empty predicate"
+      ],
+      "correct": 1,
+      "explanation": "A universal over no elements is a kept promise about nothing; the lesson script checks this case explicitly."
+    },
+    {
+      "stage": "post",
+      "question": "The negation of ∀x P(x) is…",
+      "options": [
+        "∀x ¬P(x)",
+        "∃x ¬P(x)",
+        "¬∃x P(x)",
+        "∃x P(x)"
+      ],
+      "correct": 1,
+      "explanation": "Denying \"all\" requires only one counterexample: some x failing P. The quantifier flips, the predicate negates."
+    },
+    {
+      "stage": "post",
+      "question": "The negation of ∃x P(x) is…",
+      "options": [
+        "∃x ¬P(x)",
+        "∀x ¬P(x)",
+        "¬∀x P(x)",
+        "∀x P(x)"
+      ],
+      "correct": 1,
+      "explanation": "Ruling out \"some\" means P fails for every element — all-not. SQL's NOT EXISTS is this rule in practice."
+    },
+    {
+      "stage": "post",
+      "question": "∀x ∃y (y < x) versus ∃y ∀x (y < x) over the integers: which is true?",
+      "options": [
+        "Both are true",
+        "Only the first — each x has some smaller y; no single y sits below all x",
+        "Only the second",
+        "Neither"
+      ],
+      "correct": 1,
+      "explanation": "Quantifier order is meaning: per-element helpers vs one helper serving everyone. The lesson code demonstrates both verdicts."
+    },
+    {
+      "stage": "post",
+      "question": "Why can ∀x ∃y (y < x) be true over all integers yet false on a finite slice like [-3, 3]?",
+      "options": [
+        "Because finite slices use different math",
+        "Because the smallest element of the slice has nothing below it — a boundary failure",
+        "Because the slice is too small to compute",
+        "It cannot — the claim has the same truth value on both"
+      ],
+      "correct": 1,
+      "explanation": "A claim true over an infinite domain can fail at the boundary of a finite one. Always probe the edges."
+    },
+    {
+      "stage": "post",
+      "question": "In the proof that ¬∀x P(x) ⇒ ∃x ¬P(x), the key move is…",
+      "options": [
+        "suppose no x fails P; then all satisfy P — contradicting ¬∀x P(x)",
+        "checking x = 0 first",
+        "swapping ∀ for ∃ without justification",
+        "proving P holds for a witness"
+      ],
+      "correct": 0,
+      "explanation": "Contradiction: ruling out the negation of the target forces the target. This is Phase 01's technique arriving early."
+    },
+    {
+      "stage": "post",
+      "question": "\"Users with no orders\" in SQL is best expressed using…",
+      "options": [
+        "LEFT JOIN only",
+        "NOT EXISTS — the ∀x ¬P(x) form, which indexes correctly",
+        "COUNT(*) = 0 with GROUP BY",
+        "a subquery with ANY"
+      ],
+      "correct": 1,
+      "explanation": "\"No orders\" is ¬∃ order. The negation table turns it into NOT EXISTS — the form the query planner can use."
+    }
+  ]
+}

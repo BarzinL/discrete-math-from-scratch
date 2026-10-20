@@ -1,0 +1,138 @@
+{
+  "lesson": "01-what-is-discrete-mathematics",
+  "title": "What Is Discrete Mathematics?",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of these is a discrete quantity?",
+      "options": [
+        "The temperature of a CPU over an hour",
+        "The number of compile errors in a file",
+        "The voltage across a resistor",
+        "The position of a drone along a flight path"
+      ],
+      "correct": 1,
+      "explanation": "Error counts come in separate whole pieces — there is no 2.5th error. The others vary smoothly over a range."
+    },
+    {
+      "stage": "pre",
+      "question": "A continuous quantity is best described as one that…",
+      "options": [
+        "can only be counted with a computer",
+        "takes any value in a range, with no gaps",
+        "is always a whole number",
+        "changes over time"
+      ],
+      "correct": 1,
+      "explanation": "Discrete values are separated into individual pieces; continuous ones vary smoothly across intervals."
+    },
+    {
+      "stage": "pre",
+      "question": "Which sentence describes a relationship between discrete objects rather than a smooth quantity?",
+      "options": [
+        "Course A conflicts with course B in the schedule",
+        "The server's load rose 12% this hour",
+        "The signal decays exponentially",
+        "The interest compounds continuously"
+      ],
+      "correct": 0,
+      "explanation": "Conflicts are yes/no relations between objects — exactly the structure discrete math models."
+    },
+    {
+      "stage": "pre",
+      "question": "Why is a computer naturally suited to discrete mathematics?",
+      "options": [
+        "It computes faster than any calculator",
+        "It stores a finite number of bits and takes discrete steps",
+        "It can approximate any curve",
+        "It was designed by mathematicians"
+      ],
+      "correct": 1,
+      "explanation": "A machine made of finitely many bits doing finitely many steps per second is itself a discrete object."
+    },
+    {
+      "stage": "pre",
+      "question": "Which claim about programs could running millions of tests never fully settle?",
+      "options": [
+        "The parser crashes on this specific input file",
+        "The average latency yesterday was under 200 ms",
+        "This function never loops forever, for any input",
+        "The login page renders in under a second on this phone"
+      ],
+      "correct": 2,
+      "explanation": "Forever-for-any-input quantifies over infinitely many cases; tests sample finitely many. It needs a proof."
+    },
+    {
+      "stage": "post",
+      "question": "How many subsets does a set with n elements have?",
+      "options": [
+        "n²",
+        "2ⁿ",
+        "n!",
+        "2n"
+      ],
+      "correct": 1,
+      "explanation": "Each element is either in or out — 2 independent choices per element, giving 2ⁿ. The lesson proves this by a bijection with bit strings."
+    },
+    {
+      "stage": "post",
+      "question": "The 2ⁿ-subsets proof works by…",
+      "options": [
+        "induction on the size of the set",
+        "listing all subsets and counting them",
+        "pairing each subset with an n-bit string, one-to-one",
+        "measuring how fast the count grows"
+      ],
+      "correct": 2,
+      "explanation": "A bijection between subsets and bit strings transfers the count; the bit strings are counted by the product rule."
+    },
+    {
+      "stage": "post",
+      "question": "A bijection between two collections tells you…",
+      "options": [
+        "they have exactly the same size",
+        "one contains the other",
+        "they contain the same elements",
+        "one is finite and the other is not"
+      ],
+      "correct": 0,
+      "explanation": "A one-to-one pairing uses every element exactly once on each side, so the counts must agree."
+    },
+    {
+      "stage": "post",
+      "question": "You can verify a claim about ALL natural numbers by brute force because…",
+      "options": [
+        "computers are fast enough",
+        "you cannot — finite checks never cover an infinite domain",
+        "the numbers are small",
+        "random sampling is statistically sufficient"
+      ],
+      "correct": 1,
+      "explanation": "Enumeration is a complete proof only over finite subject matter (like truth tables). Infinite domains need proof techniques."
+    },
+    {
+      "stage": "post",
+      "question": "Scheduling exams so no student has two at once is, structurally, a problem about…",
+      "options": [
+        "sorting a list of names",
+        "coloring the vertices of a conflict graph",
+        "integrating a demand curve",
+        "compressing a string"
+      ],
+      "correct": 1,
+      "explanation": "Courses are vertices, conflicts are edges, and time slots are colors — this is graph coloring, covered in Phase 05."
+    },
+    {
+      "stage": "post",
+      "question": "How many pairs (A, B) of subsets of an n-element set satisfy A ⊆ B?",
+      "options": [
+        "2ⁿ · 2ⁿ",
+        "3ⁿ",
+        "2ⁿ⁺¹",
+        "n · 2ⁿ"
+      ],
+      "correct": 1,
+      "explanation": "Each element is in neither, in B only, or in both — 3 independent choices per element, so 3ⁿ. The lesson's code verifies this."
+    }
+  ]
+}

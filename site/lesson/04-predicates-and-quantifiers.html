@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Predicates and Quantifiers · discrete math from scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<aside class="sidebar"><p class="side-brand"><a href="../index.html">discrete-math-from-scratch</a></p><p class="side-phase">00 · Foundations</p><p class="side-lesson"><a href="../lesson/01-what-is-discrete-mathematics.html">What Is Discrete Mathematics?</a></p><p class="side-lesson"><a href="../lesson/02-sets-and-set-operations.html">Sets and Set Operations</a></p><p class="side-lesson"><a href="../lesson/03-propositional-logic.html">Propositional Logic</a></p><p class="side-lesson"><a class="current" href="../lesson/04-predicates-and-quantifiers.html">Predicates and Quantifiers</a></p></aside>
+<div class="layout">
+<main>
+<p class="crumbs">00 · Foundations</p><span class="badge badge-build">Build</span> <span class="muted">~50 min</span><h1>Predicates and Quantifiers</h1>
+<blockquote>∀ and ∃ are just <code>all()</code> and <code>any()</code> — written the way mathematicians write them.</blockquote>
+<h2 id="learning-objectives">Learning Objectives</h2>
+<p>By the end of this lesson you will be able to:</p>
+<ul>
+<li>Translate English claims into predicates with quantifiers over a stated domain</li>
+<li>Negate quantified statements correctly (flip the quantifier, negate the predicate)</li>
+<li>Explain why quantifier order changes meaning, with a concrete example</li>
+<li>Build a counterexample finder that produces witnesses for failed universal claims</li>
+</ul>
+<h2 id="pre-lesson-check">Pre-Lesson Check</h2><div class="quiz-mount" data-quiz="pre" data-title="Pre-Lesson Check"><p class="quiz-blurb">Answer before reading. They show what to skim first. 3 questions are drawn at random from a larger pool — reload for a different set.</p></div>
+<p>Answer before reading — the explanations point at the section covering each idea.</p>
+<p><em>(Questions render below — three drawn at random from a larger pool each visit.)</em></p>
+<h2 id="the-problem">The Problem</h2>
+<p>"This function never returns negative values." "Every user in the export has a valid email." "Some request in the log was retried more than three times." Each of these is a claim about <em>many</em> individual facts, and none of them is a single proposition — they are proposition-<em>templates</em> waiting for an input. Propositional logic from the last lesson cannot even write them down; it has no way to say "for all x".</p>
+<p>Python programmers already own the machinery. <code>all(x &gt; 0 for x in xs)</code> and <code>any(x &gt; 0 for x in xs)</code> are exactly ∀ and ∃ over a finite domain. The lesson's job is to make that correspondence explicit and precise, and then to teach the one part that is genuinely subtle: <em>negation</em>. Getting "not everyone" vs "everyone not" backwards in a validation rule ships bugs; getting ∀/∃ negation backwards in a proof stalls every later chapter.</p>
+<h2 id="the-concept">The Concept</h2>
+<p>A <strong>predicate</strong> is a proposition with holes: P(x) = "x is prime", Q(x, y) = "x &lt; y". Fill in the hole with an element of the <strong>domain</strong> and you get a proposition with a truth value. Q(2, 5) is true; Q(5, 2) is false. Predicates become interesting when we bind their holes with <strong>quantifiers</strong>:</p>
+<table><tr><th>Statement</th><th>Reads as</th><th>True when…</th><th>Python over finite domain</th></tr><tr><td>∀x P(x)</td><td>"for all x, P(x)"</td><td>every domain element satisfies P</td><td><code>all(P(x) for x in domain)</code></td></tr><tr><td>∃x P(x)</td><td>"there exists x, P(x)"</td><td>at least one element satisfies P</td><td><code>any(P(x) for x in domain)</code></td></tr><tr><td>∃!x P(x)</td><td>"exactly one x"</td><td>one and only one satisfies P</td><td><code>sum(map(P, domain)) == 1</code></td></tr></table>
+<p>Two conventions matter. The quantifier's <em>domain</em> is always part of the statement — "∀x" is incomplete until you say x ranges over what. And the order of quantifiers is part of the statement: ∀x ∃y (y &lt; x) is true over the integers (take y = x − 1), but ∃y ∀x (y &lt; x) is false (no single y is below <em>every</em> integer). Mixed quantifiers do not commute — ∀∃ means "for each, a helper may be chosen", ∃∀ means "one helper serves everyone".</p>
+<p><strong>Negation rules</strong> — the heart of the lesson. To deny a universal claim you need only one counterexample; to deny an existential claim you must rule out all of them:</p>
+<table><tr><th>Statement</th><th>Negation</th></tr><tr><td>¬∀x P(x)</td><td>∃x ¬P(x)</td></tr><tr><td>¬∃x P(x)</td><td>∀x ¬P(x)</td></tr><tr><td>¬∀x ∃y P(x, y)</td><td>∃x ∀y ¬P(x, y)</td></tr></table>
+<p>Read the first row aloud: "not everyone passed" = "someone failed". The quantifier <em>flips</em> and the predicate <em>negates</em>. This is the discrete-math twin of De Morgan, and it drives the counterexample-finder in this lesson's code.</p>
+<p><strong>Bounded quantifiers</strong> appear constantly in practice: ∀ prime p, ∃ k ≤ 10, … — the domain is restricted by a condition. In code that is a filtered <code>all()</code>/<code>any()</code>; in proofs it is a hypothesis on what you may assume about x.</p>
+<h2 id="build-it">Build It</h2>
+<p>We model predicates over finite domains and implement quantifiers from scratch, then build a <em>counterexample finder</em> — the tool that makes negation rules feel real.</p>
+<h3 id="step-1-quantifiers-from-scratch">Step 1: Quantifiers from scratch</h3>
+<pre><code class="lang-python">def for_all(domain, predicate):
+    for x in domain:
+        if not predicate(x):
+            return False
+    return True
+
+def exists(domain, predicate):
+    for x in domain:
+        if predicate(x):
+            return True
+    return False</code></pre>
+<p><code>for_all</code> returns False the moment one element fails — that failing element <em>is</em> the witness for ¬∀x P(x) ⇒ ∃x ¬P(x). <code>exists</code> returns True at the first success — that element is the <em>witness</em> whose existence ∃ asserts. The short-circuiting behavior of everyday Python is the negation rules in miniature.</p>
+<h3 id="step-2-the-counterexample-finder">Step 2: The counterexample finder</h3>
+<p>To check that ¬∀x P(x) really equals ∃x ¬P(x) — not just believe it — we evaluate both sides over many random domains and predicates, and when a claim fails, we <em>name the witness</em>:</p>
+<pre><code class="lang-python">def counterexample(domain, predicate):
+    for x in domain:
+        if not predicate(x):
+            return x
+    return None
+
+def universal_negation_agrees(domain, predicate):
+    left = not for_all(domain, predicate)
+    right = exists(domain, lambda x: not predicate(x))
+    if left != right:
+        return False
+    if left:
+        witness = counterexample(domain, predicate)
+        assert witness is not None
+        assert not predicate(witness)
+    return True</code></pre>
+<p>The assert in the middle is the punchline: whenever "not all" is true, the finder hands back a concrete x that fails P — the counterexample exists, as promised. Run the full script: it sweeps domains of sizes 0 through 8 with dozens of generated predicates and verifies the agreement every time, including the empty domain.</p>
+<h3 id="step-3-quantifier-order-can-matter">Step 3: Quantifier order can matter</h3>
+<pre><code class="lang-python">Z = list(range(-3, 4))
+
+forall_exists = for_all(Z, lambda x: exists(Z, lambda y: y != x))
+exists_forall = exists(Z, lambda y: for_all(Z, lambda x: y != x))
+assert forall_exists and not exists_forall</code></pre>
+<p>Over any finite domain, ∀x ∃y (y ≠ x) holds (every element has <em>some other</em> element — pick anyone else) while ∃y ∀x (y ≠ x) fails (the candidate y would have to differ from itself). Same predicate, same domain, opposite verdicts — order is meaning. The script also checks the boundary trap: ∀x ∃y (y &lt; x) is true over all the integers but FALSE on any finite slice, because the smallest element has nothing below it. A claim that is true over an infinite domain can fail at the edge of a finite one — always ask what happens at the boundary.</p>
+<h2 id="prove-it">Prove It</h2>
+<p><strong>Claim: ¬∀x P(x) ≡ ∃x ¬P(x).</strong></p>
+<p>Proof: we show each side implies the other.</p>
+<p>(⇒) Suppose ¬∀x P(x) holds, and suppose — for contradiction — that ∃x ¬P(x) does not. Then every x satisfies P(x), which is exactly ∀x P(x), contradicting our supposition. So ∃x ¬P(x) holds. (This "suppose not, derive a contradiction" move is Phase 01's proof-by-contradiction; it earns its keep already.)</p>
+<p>(⇐) Suppose ∃x ¬P(x) holds, and let w be the witnessing element with ¬P(w). Since P fails at w, it cannot be that P holds at every x — so ¬∀x P(x).</p>
+<p>Both directions hold, so the statements are equivalent. ∎</p>
+<p>The companion rule ¬∃x P(x) ≡ ∀x ¬P(x) is this same proof with "and/or" swapped for "all/some" — or, more elegantly, obtained by substituting ¬P into the rule just proven and negating both sides. Notice also the empty domain: over an empty domain ∀x P(x) is vacuously true (no x can fail it) while ∃x P(x) is false (no witness exists) — which the script checks explicitly, and which matches the "kept promise about nothing" intuition from the previous lesson.</p>
+<p><strong>Your turn:</strong> prove the order-sensitivity result — that ∃y ∀x P(x, y) implies ∀x ∃y P(x, y), and find a concrete P over a small domain where the reverse fails. The witnessing structure of the proof above is all you need: the single serving y works for everyone, so in particular it works for each.</p>
+<h2 id="connect-it">Connect It</h2>
+<p><strong>In AI/ML engineering.</strong> Data validation is quantifier checking: "every row has a non-null label" is ∀x P(x) over the dataset, and the rows failing it are exactly the counterexamples your finder should name. Hypothesis testing in property-based testing (Hypothesis, fuzzing) is automated ∃-hunting — the framework searches for one input that breaks your invariant. Model cards make quantified claims ("for all demographic subgroups, error rate &lt; 2× the mean"); auditing is hunting the ∃x that falsifies it. And the order lesson — ∀∃ vs ∃∀ — is the P vs NP distinction in miniature: "every problem has a solution someone can find" versus "one method finds them all".</p>
+<p><strong>In databases.</strong> "Users with no orders" is ¬∃ order; the negation table turns it into <code>NOT EXISTS</code>, the form that indexes. Every <code>WHERE NOT IN (subquery)</code> trap with NULLs is a botched quantifier negation.</p>
+<h2 id="test-your-understanding">Test Your Understanding</h2><div class="quiz-mount" data-quiz="post" data-title="Test Your Understanding"><p class="quiz-blurb">Answer after working through the lesson. 4 questions are drawn at random from a larger pool — reload for a different set.</p></div>
+<p>Answer after working through the lesson — including running <code>main.py</code> and starting <code>exercises.py</code>.</p>
+<p><em>(Questions render below — four drawn at random from a larger pool each visit.)</em></p>
+<h2 id="exercises">Exercises</h2>
+<p>All exercises are completed <strong>at the computer</strong>. Open <code>code/exercises.py</code>, implement each <code>TODO</code> function, and run <code>python3 exercises.py</code> — the script self-grades and prints the completion banner only when every check passes.</p>
+<ol>
+<li>Easy — <code>negate_universal</code> and <code>negate_existential</code>: implement both negation rules</li>
+</ol>
+<p>as functions over (domain, predicate) and verify they agree with the direct definitions over randomized domains — the lesson's sweep, now yours.</p>
+<ol>
+<li>Medium — <code>exists_unique</code>: implement "exactly one x satisfies P" and prove by testing</li>
+</ol>
+<p>that it matches the formula ∃x (P(x) ∧ ∀y (P(y) → y = x)) implemented separately.</p>
+<ol>
+<li>Hard — <code>counterexample</code> + <code>validate_rows</code>: given a list of row dicts and a rule</li>
+</ol>
+<p>predicate, return the failing rows (the witnesses). The checker hands you a small dirty dataset and asserts your function finds exactly the rows a brute-force scan finds — quantifier negation as a working data-quality tool.</p>
+<h2 id="key-terms">Key Terms</h2>
+<table><tr><th>Term</th><th>What people say</th><th>What it actually means</th></tr><tr><td>predicate</td><td>"a condition"</td><td>a proposition with variable holes; becomes true/false once the holes are filled</td></tr><tr><td>domain</td><td>"the range"</td><td>the fixed set a quantifier ranges over — always part of the statement</td></tr><tr><td>∀ (universal)</td><td>"for all"</td><td>true when every domain element satisfies P; vacuously true over an empty domain</td></tr><tr><td>∃ (existential)</td><td>"there exists"</td><td>true when at least one element satisfies P; false over an empty domain</td></tr><tr><td>witness</td><td>"an example"</td><td>the concrete element whose existence an ∃-statement asserts</td></tr><tr><td>quantifier order</td><td>"word order"</td><td>∀∃ ≠ ∃∀: per-element helpers vs one helper for all</td></tr><tr><td>negation rule</td><td>"flip it"</td><td>negating a quantifier flips ∀↔∃ and negates the predicate</td></tr></table><script id="quiz-data" type="application/json">{"pre": {"pool": [{"stage": "pre", "question": "Which Python expression is the direct counterpart of \u2200x P(x) over a finite domain?", "options": ["any(P(x) for x in domain)", "all(P(x) for x in domain)", "map(P, domain)", "filter(P, domain)"], "correct": 1, "explanation": "all() checks every element; any() is the existential. Python already speaks quantifier."}, {"stage": "pre", "question": "A predicate is\u2026", "options": ["a sentence that is definitely true", "a proposition with variable holes that becomes true/false once filled", "a special kind of proof", "a Python decorator"], "correct": 1, "explanation": "P(x) = \"x is prime\" is neither true nor false until x is fixed \u2014 then it becomes a proposition."}, {"stage": "pre", "question": "\"Not everyone passed the exam\" is equivalent to\u2026", "options": ["everyone failed the exam", "someone passed the exam", "someone did not pass the exam", "no one took the exam"], "correct": 2, "explanation": "Negating a universal gives an existential with a negated predicate \u2014 the flip rule this lesson formalizes."}, {"stage": "pre", "question": "An existential claim \u2203x P(x) is established by\u2026", "options": ["checking every element", "exhibiting one witness where P holds", "proving P is possible", "assuming P and finding a contradiction"], "correct": 1, "explanation": "One concrete example settles an \u2203; that element is called the witness."}, {"stage": "pre", "question": "Over the empty domain, \u2200x P(x) is\u2026", "options": ["false, because nothing is true", "true, vacuously \u2014 no x can fail it", "undefined", "true only if P is the empty predicate"], "correct": 1, "explanation": "A universal over no elements is a kept promise about nothing; the lesson script checks this case explicitly."}], "shown": 3}, "post": {"pool": [{"stage": "post", "question": "The negation of \u2200x P(x) is\u2026", "options": ["\u2200x \u00acP(x)", "\u2203x \u00acP(x)", "\u00ac\u2203x P(x)", "\u2203x P(x)"], "correct": 1, "explanation": "Denying \"all\" requires only one counterexample: some x failing P. The quantifier flips, the predicate negates."}, {"stage": "post", "question": "The negation of \u2203x P(x) is\u2026", "options": ["\u2203x \u00acP(x)", "\u2200x \u00acP(x)", "\u00ac\u2200x P(x)", "\u2200x P(x)"], "correct": 1, "explanation": "Ruling out \"some\" means P fails for every element \u2014 all-not. SQL's NOT EXISTS is this rule in practice."}, {"stage": "post", "question": "\u2200x \u2203y (y < x) versus \u2203y \u2200x (y < x) over the integers: which is true?", "options": ["Both are true", "Only the first \u2014 each x has some smaller y; no single y sits below all x", "Only the second", "Neither"], "correct": 1, "explanation": "Quantifier order is meaning: per-element helpers vs one helper serving everyone. The lesson code demonstrates both verdicts."}, {"stage": "post", "question": "Why can \u2200x \u2203y (y < x) be true over all integers yet false on a finite slice like [-3, 3]?", "options": ["Because finite slices use different math", "Because the smallest element of the slice has nothing below it \u2014 a boundary failure", "Because the slice is too small to compute", "It cannot \u2014 the claim has the same truth value on both"], "correct": 1, "explanation": "A claim true over an infinite domain can fail at the boundary of a finite one. Always probe the edges."}, {"stage": "post", "question": "In the proof that \u00ac\u2200x P(x) \u21d2 \u2203x \u00acP(x), the key move is\u2026", "options": ["suppose no x fails P; then all satisfy P \u2014 contradicting \u00ac\u2200x P(x)", "checking x = 0 first", "swapping \u2200 for \u2203 without justification", "proving P holds for a witness"], "correct": 0, "explanation": "Contradiction: ruling out the negation of the target forces the target. This is Phase 01's technique arriving early."}, {"stage": "post", "question": "\"Users with no orders\" in SQL is best expressed using\u2026", "options": ["LEFT JOIN only", "NOT EXISTS \u2014 the \u2200x \u00acP(x) form, which indexes correctly", "COUNT(*) = 0 with GROUP BY", "a subquery with ANY"], "correct": 1, "explanation": "\"No orders\" is \u00ac\u2203 order. The negation table turns it into NOT EXISTS \u2014 the form the query planner can use."}], "shown": 4}}</script><script src="../quiz.js"></script>
+</main>
+<aside class="toc"><p class="toc-title">On this page</p><ul><li><a href="#learning-objectives">Learning Objectives</a></li><li><a href="#pre-lesson-check">Pre-Lesson Check</a></li><li><a href="#the-problem">The Problem</a></li><li><a href="#the-concept">The Concept</a></li><li><a href="#build-it">Build It</a></li><li><a href="#prove-it">Prove It</a></li><li><a href="#connect-it">Connect It</a></li><li><a href="#test-your-understanding">Test Your Understanding</a></li><li><a href="#exercises">Exercises</a></li><li><a href="#key-terms">Key Terms</a></li></ul></aside>
+</div>
+<footer>
+<p><a href="https://github.com/Barzin/discrete-math-from-scratch">Source on GitHub</a> ·
+Inspired by <a href="https://github.com/rohitg00/ai-engineering-from-scratch">ai-engineering-from-scratch</a> · MIT</p>
+</footer>
+</body>
+</html>

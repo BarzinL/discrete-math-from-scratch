@@ -1,0 +1,138 @@
+{
+  "lesson": "03-propositional-logic",
+  "title": "Propositional Logic",
+  "questions": [
+    {
+      "stage": "pre",
+      "question": "Which of these is a proposition?",
+      "options": [
+        "x > 5",
+        "Close the door!",
+        "7 is prime",
+        "What time is it?"
+      ],
+      "correct": 2,
+      "explanation": "A proposition has a definite truth value. \"x > 5\" has a free variable; questions and commands are not truth-valued."
+    },
+    {
+      "stage": "pre",
+      "question": "In Python, P → Q (material implication) is written…",
+      "options": [
+        "P implies Q",
+        "(not P) or Q",
+        "P and Q",
+        "P == Q"
+      ],
+      "correct": 1,
+      "explanation": "Implication is false only when P is true and Q is false — exactly the truth table of (not P) or Q."
+    },
+    {
+      "stage": "pre",
+      "question": "A truth table over n variables has how many rows?",
+      "options": [
+        "n²",
+        "2n",
+        "2ⁿ",
+        "n!"
+      ],
+      "correct": 2,
+      "explanation": "Each variable is independently true or false: 2 × 2 × … × 2 = 2ⁿ possible assignments."
+    },
+    {
+      "stage": "pre",
+      "question": "\"If it rains, the ground is wet\" and \"if the ground is wet, it rained\" are…",
+      "options": [
+        "the same statement",
+        "logically equivalent",
+        "a statement and its converse — different claims",
+        "a statement and its negation"
+      ],
+      "correct": 2,
+      "explanation": "The second is the converse. A sprinkler makes the ground wet without rain — the lesson's counterexample."
+    },
+    {
+      "stage": "pre",
+      "question": "Two compound statements are logically equivalent when…",
+      "options": [
+        "they look similar",
+        "they are both sometimes true",
+        "they have identical truth values under every assignment",
+        "one implies the other"
+      ],
+      "correct": 2,
+      "explanation": "Equivalence means same truth table column — same value in every possible world."
+    },
+    {
+      "stage": "post",
+      "question": "When is the promise P → Q broken?",
+      "options": [
+        "P is false and Q is false",
+        "P is true and Q is false",
+        "P is false and Q is true",
+        "never — implications are always true"
+      ],
+      "correct": 1,
+      "explanation": "A promise is only violated when its premise held and the conclusion failed. F → anything is vacuously true."
+    },
+    {
+      "stage": "post",
+      "question": "De Morgan's laws state that ¬(P ∨ Q) equals…",
+      "options": [
+        "¬P ∨ ¬Q",
+        "¬P ∧ ¬Q",
+        "P ∧ Q",
+        "¬(P ∧ Q)"
+      ],
+      "correct": 1,
+      "explanation": "Negation flips ∨ to ∧ and negates each part — proven by cases in the lesson, checked by truth table."
+    },
+    {
+      "stage": "post",
+      "question": "The contrapositive of P → Q is…",
+      "options": [
+        "Q → P",
+        "¬P → ¬Q",
+        "¬Q → ¬P",
+        "P ∧ ¬Q"
+      ],
+      "correct": 2,
+      "explanation": "Flip and negate both. The contrapositive is always equivalent to the original — unlike the converse."
+    },
+    {
+      "stage": "post",
+      "question": "Why is brute-force truth-table checking a complete proof for propositional formulas?",
+      "options": [
+        "Because computers are fast",
+        "Because a formula over n variables has only 2ⁿ possible worlds — finite subject matter",
+        "Because logic is simple",
+        "It is not a proof; it is only evidence"
+      ],
+      "correct": 1,
+      "explanation": "Exhausting all 2ⁿ assignments leaves no world unchecked. Over infinite domains enumeration loses this power."
+    },
+    {
+      "stage": "post",
+      "question": "A billing rule reads `not (expired or unpaid)`. An equivalent rewrite is…",
+      "options": [
+        "not expired or not unpaid",
+        "not expired and not unpaid",
+        "expired and unpaid",
+        "expired or not unpaid"
+      ],
+      "correct": 1,
+      "explanation": "De Morgan: the negation distributes inward and flips or to and — the exact example from the lesson opening."
+    },
+    {
+      "stage": "post",
+      "question": "How many logically distinct binary connectives exist (truth functions on two inputs)?",
+      "options": [
+        "4",
+        "8",
+        "16",
+        "256"
+      ],
+      "correct": 2,
+      "explanation": "A binary connective fills a 4-row truth table, each row T or F: 2⁴ = 16. The lesson script counts them."
+    }
+  ]
+}

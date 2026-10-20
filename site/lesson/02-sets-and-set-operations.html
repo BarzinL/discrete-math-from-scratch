@@ -1,0 +1,139 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Sets and Set Operations · discrete math from scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<aside class="sidebar"><p class="side-brand"><a href="../index.html">discrete-math-from-scratch</a></p><p class="side-phase">00 · Foundations</p><p class="side-lesson"><a href="../lesson/01-what-is-discrete-mathematics.html">What Is Discrete Mathematics?</a></p><p class="side-lesson"><a class="current" href="../lesson/02-sets-and-set-operations.html">Sets and Set Operations</a></p><p class="side-lesson"><a href="../lesson/03-propositional-logic.html">Propositional Logic</a></p><p class="side-lesson"><a href="../lesson/04-predicates-and-quantifiers.html">Predicates and Quantifiers</a></p></aside>
+<div class="layout">
+<main>
+<p class="crumbs">00 · Foundations</p><span class="badge badge-build">Build</span> <span class="muted">~45 min</span><h1>Sets and Set Operations</h1>
+<blockquote>A set has no order and no repeats. Everything else — lists, databases, filters — is</blockquote>
+<blockquote>built on top of that.</blockquote>
+<h2 id="learning-objectives">Learning Objectives</h2>
+<p>By the end of this lesson you will be able to:</p>
+<ul>
+<li>Define sets by membership and predict the result of ∪, ∩, −, △, and complement</li>
+<li>Implement each set operation from membership tests alone</li>
+<li>Verify De Morgan and distributive laws by exhaustive brute force over a universe</li>
+<li>Prove a set identity by double inclusion</li>
+</ul>
+<h2 id="pre-lesson-check">Pre-Lesson Check</h2><div class="quiz-mount" data-quiz="pre" data-title="Pre-Lesson Check"><p class="quiz-blurb">Answer before reading. They show what to skim first. 3 questions are drawn at random from a larger pool — reload for a different set.</p></div>
+<p>Answer before reading — the explanations point at the section covering each idea.</p>
+<p><em>(Questions render below — three drawn at random from a larger pool each visit.)</em></p>
+<h2 id="the-problem">The Problem</h2>
+<p>You have two access-control lists at work: <code>admins</code> and <code>contractors</code>. Who is both? Who is one but not the other? Who is in neither? You could write three nested loops with flags and edge cases — or you could recognize these as intersection, difference, and complement and be done. Nearly every "find the overlap between two collections" question in software is a set operation wearing a costume.</p>
+<p>Sets also solve a subtler problem: <em>talking precisely</em>. When you write "all users with an active subscription AND a verified email," you have defined a set. When the marketing team disagrees with you about who that includes, you can settle it by checking one membership question per user — because a set is exactly determined by what belongs to it. No order, no duplicates, no ambiguity.</p>
+<h2 id="the-concept">The Concept</h2>
+<p>A <strong>set</strong> is a collection of distinct objects. <code>2 ∈ {1, 2, 3}</code> means 2 <em>is a member</em>; <code>4 ∉ {1, 2, 3}</code> means it is not. Two sets are <strong>equal</strong> when they have exactly the same members — so <code>{1, 2} = {2, 1} = {1, 1, 2}</code>. Repetition and order simply do not exist in a set. If you need order, use a tuple or a list; a set is the tool for <em>membership</em> questions.</p>
+<p>Sets can contain other sets. <code>{1, 2}</code> is a set; <code>{{1}, {2}, {1, 2}}</code> is a different set whose members happen to be sets. The <strong>power set</strong> of S, written P(S), is the set of <em>all</em> subsets of S — we proved |P(S)| = 2ⁿ in the previous lesson.</p>
+<p>The operations, all defined purely by membership:</p>
+<table><tr><th>Operation</th><th>Notation</th><th>x is in the result when…</th></tr><tr><td>union</td><td>A ∪ B</td><td>x ∈ A <strong>or</strong> x ∈ B</td></tr><tr><td>intersection</td><td>A ∩ B</td><td>x ∈ A <strong>and</strong> x ∈ B</td></tr><tr><td>difference</td><td>A − B</td><td>x ∈ A and x ∉ B</td></tr><tr><td>symmetric difference</td><td>A △ B</td><td>x is in exactly one of A, B</td></tr><tr><td>complement</td><td>Ā</td><td>x ∉ A (relative to some universe U)</td></tr><tr><td>subset</td><td>A ⊆ B</td><td>every member of A is also a member of B</td></tr></table>
+<p>The last row is the important conceptual shift: A ⊆ B is itself a <em>claim</em>, true or false, that quantifies over all members. Operations produce sets; ⊆, ∈, and = produce truth values. Keeping "which expressions denote sets, which denote booleans" straight is half of set fluency.</p>
+<p>Two laws tie the operations together and will be our proof targets:</p>
+<ul>
+<li><strong>De Morgan:</strong> A ∪ B Ā = Ā ∩ B̄ — "not (in A or in B)" equals "not in A and not in B"</li>
+<li><strong>Distributive:</strong> A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C)</li>
+</ul>
+<h2 id="build-it">Build It</h2>
+<p>Python's built-in <code>set</code> type implements all of this. But the point of this lesson is to see that the operations are <em>nothing more than the membership conditions in the table</em> — so we build them from <code>in</code> checks alone, then check them against Python's versions.</p>
+<h3 id="step-1-operations-from-membership-tests">Step 1: Operations from membership tests</h3>
+<pre><code class="lang-python">def union(a, b):
+    return {x for x in a | b}
+
+def intersection(a, b):
+    return {x for x in a if x in b}
+
+def difference(a, b):
+    return {x for x in a if x not in b}
+
+def symmetric_difference(a, b):
+    return {x for x in a if x not in b} | {x for x in b if x not in a}</code></pre>
+<p>Each one is a direct transcription of the rightmost table column: "or" becomes combining both scans, "and" becomes a filter, "not in" becomes a negative filter. That is the whole implementation.</p>
+<h3 id="step-2-brute-force-check-the-laws">Step 2: Brute-force check the laws</h3>
+<p>A set law over a universe of size n can be checked by trying every combination of "member / not member" for each element. With a universe of 4 elements that is 2⁴ = 16 worlds per set variable — cheap, and it either finds a counterexample or fails to find one in every possible world.</p>
+<pre><code class="lang-python">def all_subsets(u):
+    result = [frozenset()]
+    for size in range(1, len(u) + 1):
+        result.extend(frozenset(c) for c in combinations(u, size))
+    return result
+
+def de_morgan_holds(u):
+    for a in all_subsets(u):
+        for b in all_subsets(u):
+            if (u - (a | b)) != ((u - a) &amp; (u - b)):
+                return (False, a, b)
+    return (True,)</code></pre>
+<p>The full script below does this properly for every pair (and triple) of subsets of a 4-element universe, asserting both sides of each law are equal as sets. If any assignment of elements differed, the assert would fire with the offending sets printed.</p>
+<pre><code class="lang-python">from itertools import combinations
+
+def all_subsets(u):
+    result = [frozenset()]
+    for size in range(1, len(u) + 1):
+        result.extend(frozenset(c) for c in combinations(u, size))
+    return result
+
+def de_morgan_holds(u):
+    subs = all_subsets(u)
+    for a in subs:
+        for b in subs:
+            left = u - (a | b)
+            right = (u - a) &amp; (u - b)
+            if left != right:
+                return (False, a, b, left, right)
+    return (True,)
+
+def distributive_holds(u):
+    subs = all_subsets(u)
+    for a in subs:
+        for b in subs:
+            for c in subs:
+                if (a &amp; (b | c)) != ((a &amp; b) | (a &amp; c)):
+                    return (False, a, b, c)
+    return (True,)</code></pre>
+<p>Running <code>main.py</code> prints a PASS line for De Morgan and for distributivity over a 4-element universe — 256 and 4096 set comparisons respectively, all agreeing.</p>
+<h2 id="prove-it">Prove It</h2>
+<p><strong>Claim: Ā ∩ B̄ = complement of (A ∪ B), relative to universe U.</strong></p>
+<p>Proof: we show each side is a subset of the other, which forces equality.</p>
+<p>(⊆) Take any x ∈ Ā ∩ B̄. Then x ∈ Ā, so x ∉ A; and x ∈ B̄, so x ∉ B. Since x is in neither A nor B, x is not in their union: x ∉ A ∪ B. So x is in the complement of A ∪ B.</p>
+<p>(⊇) Take any x in the complement of A ∪ B, so x ∉ A ∪ B. If x were in A, then x would be in A ∪ B — contradiction. So x ∉ A, i.e. x ∈ Ā. Identically x ∉ B, so x ∈ B̄. Therefore x ∈ Ā ∩ B̄.</p>
+<p>Both subset directions hold for every x, so the two sets are equal. ∎</p>
+<p>This proof technique — show A ⊆ B and B ⊆ A, conclude A = B — is called <strong>double inclusion</strong> and is the standard way to prove two sets equal. Note also what the proof used: only the meanings of ∩, ∪, and complement. Nothing about numbers, sizes, or what the elements are. That is why the brute-force check over an arbitrary 4-element universe finding no counterexample is <em>evidence</em>, and this proof is <em>the reason</em> — the proof works over every universe, of any size, containing anything.</p>
+<p><strong>Your turn:</strong> prove A ∩ (B ∪ C) = (A ∩ B) ∪ (A ∩ C) by double inclusion. The structure of the proof above repeats almost word for word.</p>
+<h2 id="connect-it">Connect It</h2>
+<p><strong>In AI/ML engineering.</strong> A one-hot encoder maps each category to the set of features it activates; a label space is literally a set, and <code>model.classes_</code> is its enumeration. Train/test splits are set differences (the holdout is <code>all_data − train</code>), dedup before splitting is set equality, and feature-overlap analysis between datasets is intersection. In evaluation, "which errors do both models make?" is A ∩ B of their error sets — if that intersection is large, the models fail the same way and an ensemble won't help.</p>
+<p><strong>In systems code.</strong> Permission checks are intersections and complements; cache invalidation is set difference; De Morgan read backwards is the difference between "deny if not (admin or owner)" and "allow if not-admin and not-owner" — get it backwards and you ship an authorization hole.</p>
+<h2 id="test-your-understanding">Test Your Understanding</h2><div class="quiz-mount" data-quiz="post" data-title="Test Your Understanding"><p class="quiz-blurb">Answer after working through the lesson. 4 questions are drawn at random from a larger pool — reload for a different set.</p></div>
+<p>Answer after working through the lesson — including running <code>main.py</code> and starting <code>exercises.py</code>.</p>
+<p><em>(Questions render below — four drawn at random from a larger pool each visit.)</em></p>
+<h2 id="exercises">Exercises</h2>
+<p>All exercises are completed <strong>at the computer</strong>. Open <code>code/exercises.py</code>, implement each <code>TODO</code> function, and run <code>python3 exercises.py</code> — the script self-grades and prints the completion banner only when every check passes.</p>
+<ol>
+<li>Easy — <code>power_set</code>: build P(S) for a 4-element set without <code>itertools</code>. The checker</li>
+</ol>
+<p>verifies both the count (2ⁿ) and that your result matches the brute-force enumeration.</p>
+<ol>
+<li>Medium — <code>symdiff</code>: implement symmetric difference using ONLY membership tests</li>
+</ol>
+<p>(<code>in</code>, loops, set-builder style) — no <code>-</code>, <code>^</code>, <code>|</code>, or <code>&amp;</code>. The checker compares you against Python's <code>^</code> over all subset pairs of a 4-element universe.</p>
+<ol>
+<li>Hard — <code>is_subset</code>, then <code>set_eq</code> via double inclusion: prove A = B by checking</li>
+</ol>
+<p>A ⊆ B and B ⊆ A through your own <code>is_subset</code>. The checker tries your functions against tricky pairs (equal sets, empty set, same-size non-equal sets).</p>
+<h2 id="key-terms">Key Terms</h2>
+<table><tr><th>Term</th><th>What people say</th><th>What it actually means</th></tr><tr><td>set</td><td>"a list"</td><td>a collection with no order and no duplicates; only membership matters</td></tr><tr><td>power set</td><td>"all the lists"</td><td>the set of every subset; has exactly 2ⁿ members for n-element S</td></tr><tr><td>subset</td><td>"smaller than"</td><td>every member of A is a member of B — equal sets are subsets of each other</td></tr><tr><td>symmetric difference</td><td>"XOR of sets"</td><td>members of exactly one of the two sets</td></tr><tr><td>universe</td><td>"the world"</td><td>the fixed collection the complement is taken relative to</td></tr><tr><td>double inclusion</td><td>"check both ways"</td><td>A = B iff A ⊆ B and B ⊆ A — the standard set-equality proof</td></tr></table><script id="quiz-data" type="application/json">{"pre": {"pool": [{"stage": "pre", "question": "Which Python type most directly models a mathematical set?", "options": ["list", "tuple", "set", "dict"], "correct": 2, "explanation": "Python's set has no order and no duplicates \u2014 exactly membership-only structure."}, {"stage": "pre", "question": "You need \"everyone who is in admins AND in contractors\". In set language that is\u2026", "options": ["the union admins \u222a contractors", "the intersection admins \u2229 contractors", "the difference admins \u2212 contractors", "the complement of admins"], "correct": 1, "explanation": "\"Both\" is intersection; union is \"either\", difference is \"in one but not the other\"."}, {"stage": "pre", "question": "Are {1, 2} and {2, 1, 1} the same set?", "options": ["No, because order differs", "No, because one has a duplicate", "Yes \u2014 sets have no order and no repeats", "Only if the universe is {1, 2}"], "correct": 2, "explanation": "A set is fully determined by what belongs to it; order and repetition simply do not exist."}, {"stage": "pre", "question": "The expression A \u2286 B is a claim that\u2026", "options": ["produces a new set", "is true exactly when every member of A is also a member of B", "means A is strictly smaller than B", "only makes sense for numbers"], "correct": 1, "explanation": "Operations like \u222a produce sets; \u2286, \u2208, = produce truth values. Keeping them straight is half of set fluency."}, {"stage": "pre", "question": "\"Users who are not admins\" is ambiguous in code unless you also fix\u2026", "options": ["the password policy", "the universe the complement is taken over", "the sort order", "the data structure used"], "correct": 1, "explanation": "Complement is always relative to a universe \u2014 all users, all accounts, all visitors? The lesson's trap example turns on this."}], "shown": 3}, "post": {"pool": [{"stage": "post", "question": "De Morgan's law for sets says \u0100 \u222a B\u0304 complement equals\u2026", "options": ["\u0100 \u2229 B\u0304 \u2014 complement of union is intersection of complements", "\u0100 \u2212 B\u0304", "A \u222a B itself", "the empty set"], "correct": 0, "explanation": "\"Not (in A or in B)\" is exactly \"not in A and not in B\" \u2014 the set twin of the logic law from the next lesson."}, {"stage": "post", "question": "The standard proof technique for showing two sets A and B are equal is\u2026", "options": ["checking a few example elements", "double inclusion: A \u2286 B and B \u2286 A", "comparing their sizes", "listing all their elements"], "correct": 1, "explanation": "Each inclusion direction rules out half the possible mismatches; together they force equality for every element."}, {"stage": "post", "question": "The symmetric difference A \u25b3 B contains exactly\u2026", "options": ["elements in both A and B", "elements in neither set", "elements in exactly one of A and B", "all elements of A plus all of B"], "correct": 2, "explanation": "It is (A \u2212 B) \u222a (B \u2212 A) \u2014 the XOR of sets, verified computationally in the lesson script."}, {"stage": "post", "question": "Why does brute-forcing a set law over a 4-element universe provide only evidence, not proof?", "options": ["Four elements are too few to compute with", "The law must hold over every universe of every size, and finite checks cover only one", "Computers round floating-point values", "Subsets cannot be enumerated completely"], "correct": 1, "explanation": "The prose proof by double inclusion works for any universe; the computer check explored one small instance of it."}, {"stage": "post", "question": "In the proof of \u00ac(x \u2208 A \u222a B) \u21d2 x \u2208 \u0100, the key step is\u2026", "options": ["dividing by the size of A", "if x were in A, then x would be in A \u222a B \u2014 a contradiction", "renaming x to y", "checking whether A is finite"], "correct": 1, "explanation": "Contradiction against the definition of union \u2014 the same move used throughout later proofs."}, {"stage": "post", "question": "SQL's INTERSECT, UNION, and EXCEPT correspond to which set operations?", "options": ["intersection, union, difference", "union, intersection, complement", "difference, symmetric difference, union", "subset, superset, equality"], "correct": 0, "explanation": "Query engines implement exactly the operations defined by membership conditions in this lesson."}], "shown": 4}}</script><script src="../quiz.js"></script>
+</main>
+<aside class="toc"><p class="toc-title">On this page</p><ul><li><a href="#learning-objectives">Learning Objectives</a></li><li><a href="#pre-lesson-check">Pre-Lesson Check</a></li><li><a href="#the-problem">The Problem</a></li><li><a href="#the-concept">The Concept</a></li><li><a href="#build-it">Build It</a></li><li><a href="#prove-it">Prove It</a></li><li><a href="#connect-it">Connect It</a></li><li><a href="#test-your-understanding">Test Your Understanding</a></li><li><a href="#exercises">Exercises</a></li><li><a href="#key-terms">Key Terms</a></li></ul></aside>
+</div>
+<footer>
+<p><a href="https://github.com/Barzin/discrete-math-from-scratch">Source on GitHub</a> ·
+Inspired by <a href="https://github.com/rohitg00/ai-engineering-from-scratch">ai-engineering-from-scratch</a> · MIT</p>
+</footer>
+</body>
+</html>

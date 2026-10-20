@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>What Is Discrete Mathematics? · discrete math from scratch</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=VT323&family=Source+Serif+4:ital,opsz,wght@0,8..60,400..700;1,8..60,400&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="../style.css">
+</head>
+<body>
+<aside class="sidebar"><p class="side-brand"><a href="../index.html">discrete-math-from-scratch</a></p><p class="side-phase">00 · Foundations</p><p class="side-lesson"><a class="current" href="../lesson/01-what-is-discrete-mathematics.html">What Is Discrete Mathematics?</a></p><p class="side-lesson"><a href="../lesson/02-sets-and-set-operations.html">Sets and Set Operations</a></p><p class="side-lesson"><a href="../lesson/03-propositional-logic.html">Propositional Logic</a></p><p class="side-lesson"><a href="../lesson/04-predicates-and-quantifiers.html">Predicates and Quantifiers</a></p></aside>
+<div class="layout">
+<main>
+<p class="crumbs">00 · Foundations</p><span class="badge badge-learn">Learn</span> <span class="muted">~30 min</span><h1>What Is Discrete Mathematics?</h1>
+<blockquote>Study what you can count, one step at a time — because computers can too.</blockquote>
+<h2 id="learning-objectives">Learning Objectives</h2>
+<p>By the end of this lesson you will be able to:</p>
+<ul>
+<li>Distinguish discrete from continuous quantities in concrete CS scenarios</li>
+<li>Explain why a computer is inherently a discrete machine</li>
+<li>State how many subsets an n-element set has and outline the bijection proof</li>
+<li>Decide when testing suffices for a claim and when a proof is required</li>
+</ul>
+<h2 id="pre-lesson-check">Pre-Lesson Check</h2><div class="quiz-mount" data-quiz="pre" data-title="Pre-Lesson Check"><p class="quiz-blurb">Answer before reading. They show what to skim first. 3 questions are drawn at random from a larger pool — reload for a different set.</p></div>
+<p>Answer these before reading — they calibrate what to skim. If you miss one, the explanation points at the section that covers it.</p>
+<p><em>(Questions render below — three drawn at random from a larger pool each visit.)</em></p>
+<h2 id="the-problem">The Problem</h2>
+<p>You want to write a program that schedules final exams: 40 courses, 12 rooms, no two exams in the same room at the same time, students must not have two exams at once. Nothing here involves calculus. There is no curve to optimize, no rate of change. There are <em>objects</em> (courses, rooms, time slots) and <em>relationships</em> between them (conflicts, assignments). The mathematics that handles objects and relationships — as opposed to quantities that vary smoothly — is discrete mathematics.</p>
+<p>The word <em>discrete</em> is the opposite of <em>continuous</em>. A continuous quantity, like temperature, can take any value in a range: 20.1°, 20.13°, 20.1300007°. A discrete quantity is separated into individual pieces: a course either conflicts with another or it does not — there is no "0.7 conflicts". Between any two courses there is no third course "in between". Discrete mathematics is the mathematics of such separate, countable structures.</p>
+<p>This matters for computer science because a computer is a discrete machine. It stores a finite number of bits, performs a finite number of operations per second, and every data structure you will ever use — arrays, trees, graphs, hash tables — is a discrete object. Continuous mathematics (calculus) explains how a neural network <em>trains</em>; discrete mathematics explains everything about the <em>machine</em> doing the training: how much memory, how many steps, whether the protocol is correct, whether the graph of connections is connected.</p>
+<h2 id="the-concept">The Concept</h2>
+<p>The subject is a toolbox of linked topics, each giving a language for a different kind of discrete structure:</p>
+<table><tr><th>Topic</th><th>The structure it studies</th><th>Where you meet it in CS</th></tr><tr><td>Logic and proofs</td><td>sentences that are true or false</td><td>program correctness, verification</td></tr><tr><td>Sets</td><td>collections without order or repeats</td><td>relational databases, types</td></tr><tr><td>Functions and relations</td><td>pairings between collections</td><td>hashing, sorting, permissions</td></tr><tr><td>Combinatorics</td><td>counting without listing</td><td>algorithm analysis, probability</td></tr><tr><td>Number theory</td><td>integers and divisibility</td><td>cryptography, hashing</td></tr><tr><td>Graph theory</td><td>objects and connections</td><td>networks, dependencies, maps</td></tr><tr><td>Discrete probability</td><td>chance over finite outcomes</td><td>randomized algorithms, ML</td></tr></table>
+<p>Two ideas run through everything and are worth naming now.</p>
+<p><strong>Counting is hard to do correctly.</strong> Given enough pieces, naive answers overcount or undercount. Much of this curriculum is training a very specific skill: counting a set of possibilities exactly once each.</p>
+<p><strong>Verification is cheaper than proof sometimes, and proof is cheaper than verification other times.</strong> If you claim "every even number greater than 2 can be written as a sum of two primes," testing the first few million cases is instant and proves nothing about the rest. If you claim "this algorithm never loops forever," testing tells you almost nothing and a proof settles it forever. Knowing which tool fits which claim is a central skill — the next lessons alternate between the two deliberately.</p>
+<p>A first concrete example: think of the people you follow on social media as dots, with a line between two dots when one follows the other. Questions like "does a message from A reach B within three forwards?" or "what is the smallest group of accounts whose removal disconnects the network?" are graph-theory questions. The dots-and-lines model throws away everything except the structure — and it turns out structure is the thing that answers the question.</p>
+<h2 id="prove-it">Prove It</h2>
+<p>Even this orientation lesson has a first honest proof. Claim:</p>
+<p><strong>There are exactly 2ⁿ subsets of a set with n elements.</strong></p>
+<p>Why should anyone believe 2ⁿ? Here is the proof, called a <em>proof by bijection</em> — counting the same collection two ways.</p>
+<p>Every subset of a set with n elements corresponds, one-to-one, to a string of n bits: bit i is 1 exactly when element i is in the subset, and 0 otherwise. The subset and the bit string determine each other completely — nothing is lost going either direction. So there are exactly as many subsets as there are n-bit strings. An n-bit string has 2 choices per position, and the positions are independent, so by the product rule (properly proven in the counting phase) there are 2 × 2 × … × 2 = 2ⁿ strings. Hence 2ⁿ subsets. ∎</p>
+<p>Notice the shape of that argument: a bijection (the correspondence), plus a product rule (the choices per bit). Nearly every counting proof in this curriculum has that same skeleton with different bones.</p>
+<h2 id="connect-it">Connect It</h2>
+<p><strong>In AI/ML engineering.</strong> Training sets, batches, and epochs are discrete counts; a model's vocabulary is a finite set of tokens; a classifier's output space is a set of labels whose size you set with one argument. The 2ⁿ subsets result is not a curiosity: feature selection over n candidate features searches exactly 2ⁿ candidate feature sets (exhaustive search dies near n = 30 — this is why heuristics exist), and a "power set" of interventions sits underneath do-calculus in causal ML.</p>
+<p><strong>In everyday code.</strong> Every <code>frozenset</code> you use as a dict key, every <code>GROUP BY</code>, every feature-engineering step that asks "which combination of columns identifies a row?" is this lesson's machinery.</p>
+<ul>
+<li><strong>Scheduling exam conflicts</strong>, from the opening problem, is graph coloring — Phase 05.</li>
+<li><strong>Cryptography</strong> rests entirely on number theory — Phase 04.</li>
+<li><strong>Proofs of program correctness</strong> are logic — Phases 00 and 01.</li>
+<li><strong>Big-O analysis</strong> of every algorithm you will ever write is a counting argument — Phase 08.</li>
+</ul>
+<h2 id="test-your-understanding">Test Your Understanding</h2><div class="quiz-mount" data-quiz="post" data-title="Test Your Understanding"><p class="quiz-blurb">Answer after working through the lesson. 4 questions are drawn at random from a larger pool — reload for a different set.</p></div>
+<p>Answer these after working through the lesson — including running <code>main.py</code> and starting <code>exercises.py</code>.</p>
+<p><em>(Questions render below — four drawn at random from a larger pool each visit.)</em></p>
+<h2 id="exercises">Exercises</h2>
+<p>All exercises are completed <strong>at the computer</strong>. Open <code>code/exercises.py</code>, implement each <code>TODO</code> function, and run <code>python3 exercises.py</code> — the script self-grades every exercise with a PASS/FAIL line and will not print the final <code>ALL EXERCISES COMPLETE</code> banner until every check passes.</p>
+<ol>
+<li>Easy — <code>subsets_of</code>: generate all subsets of a list without <code>itertools</code>, using the</li>
+</ol>
+<p>bit-string encoding from the proof. The checker compares you against 2ⁿ.</p>
+<ol>
+<li>Medium — <code>subsets_containing</code>: count subsets containing a given element, and</li>
+</ol>
+<p><code>pairs_subset</code>: count pairs (A, B) with A ⊆ B. Both answers fall out of per-element choice arguments — the checker verifies your formula for n up to 12.</p>
+<ol>
+<li>Hard — <code>bijection_roundtrip</code>: prove the bit-string encoding is a bijection by</li>
+</ol>
+<p>implementing <code>encode_subset</code> and <code>decode_bits</code> so that every subset survives the round trip. If your pair of functions is a genuine bijection, the exhaustive check passes for every subset of a 6-element set.</p>
+<h2 id="key-terms">Key Terms</h2>
+<table><tr><th>Term</th><th>What people say</th><th>What it actually means</th></tr><tr><td>discrete</td><td>"small"</td><td>made of separate, individually listable pieces; opposite of continuous</td></tr><tr><td>continuous</td><td>"big"</td><td>varies smoothly over a range, like real numbers on an interval</td></tr><tr><td>bijection</td><td>"they match up"</td><td>a pairing between two collections where every element is used exactly once on each side</td></tr><tr><td>combinatorics</td><td>"hard counting"</td><td>the exact counting of finite structures</td></tr><tr><td>structure</td><td>"the stuff"</td><td>which elements exist and how they relate — the only thing these models keep</td></tr></table><script id="quiz-data" type="application/json">{"pre": {"pool": [{"stage": "pre", "question": "Which of these is a discrete quantity?", "options": ["The temperature of a CPU over an hour", "The number of compile errors in a file", "The voltage across a resistor", "The position of a drone along a flight path"], "correct": 1, "explanation": "Error counts come in separate whole pieces \u2014 there is no 2.5th error. The others vary smoothly over a range."}, {"stage": "pre", "question": "A continuous quantity is best described as one that\u2026", "options": ["can only be counted with a computer", "takes any value in a range, with no gaps", "is always a whole number", "changes over time"], "correct": 1, "explanation": "Discrete values are separated into individual pieces; continuous ones vary smoothly across intervals."}, {"stage": "pre", "question": "Which sentence describes a relationship between discrete objects rather than a smooth quantity?", "options": ["Course A conflicts with course B in the schedule", "The server's load rose 12% this hour", "The signal decays exponentially", "The interest compounds continuously"], "correct": 0, "explanation": "Conflicts are yes/no relations between objects \u2014 exactly the structure discrete math models."}, {"stage": "pre", "question": "Why is a computer naturally suited to discrete mathematics?", "options": ["It computes faster than any calculator", "It stores a finite number of bits and takes discrete steps", "It can approximate any curve", "It was designed by mathematicians"], "correct": 1, "explanation": "A machine made of finitely many bits doing finitely many steps per second is itself a discrete object."}, {"stage": "pre", "question": "Which claim about programs could running millions of tests never fully settle?", "options": ["The parser crashes on this specific input file", "The average latency yesterday was under 200 ms", "This function never loops forever, for any input", "The login page renders in under a second on this phone"], "correct": 2, "explanation": "Forever-for-any-input quantifies over infinitely many cases; tests sample finitely many. It needs a proof."}], "shown": 3}, "post": {"pool": [{"stage": "post", "question": "How many subsets does a set with n elements have?", "options": ["n\u00b2", "2\u207f", "n!", "2n"], "correct": 1, "explanation": "Each element is either in or out \u2014 2 independent choices per element, giving 2\u207f. The lesson proves this by a bijection with bit strings."}, {"stage": "post", "question": "The 2\u207f-subsets proof works by\u2026", "options": ["induction on the size of the set", "listing all subsets and counting them", "pairing each subset with an n-bit string, one-to-one", "measuring how fast the count grows"], "correct": 2, "explanation": "A bijection between subsets and bit strings transfers the count; the bit strings are counted by the product rule."}, {"stage": "post", "question": "A bijection between two collections tells you\u2026", "options": ["they have exactly the same size", "one contains the other", "they contain the same elements", "one is finite and the other is not"], "correct": 0, "explanation": "A one-to-one pairing uses every element exactly once on each side, so the counts must agree."}, {"stage": "post", "question": "You can verify a claim about ALL natural numbers by brute force because\u2026", "options": ["computers are fast enough", "you cannot \u2014 finite checks never cover an infinite domain", "the numbers are small", "random sampling is statistically sufficient"], "correct": 1, "explanation": "Enumeration is a complete proof only over finite subject matter (like truth tables). Infinite domains need proof techniques."}, {"stage": "post", "question": "Scheduling exams so no student has two at once is, structurally, a problem about\u2026", "options": ["sorting a list of names", "coloring the vertices of a conflict graph", "integrating a demand curve", "compressing a string"], "correct": 1, "explanation": "Courses are vertices, conflicts are edges, and time slots are colors \u2014 this is graph coloring, covered in Phase 05."}, {"stage": "post", "question": "How many pairs (A, B) of subsets of an n-element set satisfy A \u2286 B?", "options": ["2\u207f \u00b7 2\u207f", "3\u207f", "2\u207f\u207a\u00b9", "n \u00b7 2\u207f"], "correct": 1, "explanation": "Each element is in neither, in B only, or in both \u2014 3 independent choices per element, so 3\u207f. The lesson's code verifies this."}], "shown": 4}}</script><script src="../quiz.js"></script>
+</main>
+<aside class="toc"><p class="toc-title">On this page</p><ul><li><a href="#learning-objectives">Learning Objectives</a></li><li><a href="#pre-lesson-check">Pre-Lesson Check</a></li><li><a href="#the-problem">The Problem</a></li><li><a href="#the-concept">The Concept</a></li><li><a href="#prove-it">Prove It</a></li><li><a href="#connect-it">Connect It</a></li><li><a href="#test-your-understanding">Test Your Understanding</a></li><li><a href="#exercises">Exercises</a></li><li><a href="#key-terms">Key Terms</a></li></ul></aside>
+</div>
+<footer>
+<p><a href="https://github.com/Barzin/discrete-math-from-scratch">Source on GitHub</a> ·
+Inspired by <a href="https://github.com/rohitg00/ai-engineering-from-scratch">ai-engineering-from-scratch</a> · MIT</p>
+</footer>
+</body>
+</html>
