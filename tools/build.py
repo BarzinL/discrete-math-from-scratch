@@ -287,7 +287,7 @@ PAGE_SHELL = """<!DOCTYPE html>
 {toc}
 </div>
 <footer>
-<p><a href="https://github.com/Barzin/discrete-math-from-scratch">Source on GitHub</a> ·
+<p><a href="https://github.com/BarzinL/discrete-math-from-scratch">Source on GitHub</a> ·
 Inspired by <a href="https://github.com/rohitg00/ai-engineering-from-scratch">ai-engineering-from-scratch</a> · MIT</p>
 </footer>
 </body>
